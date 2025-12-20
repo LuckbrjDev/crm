@@ -1,53 +1,65 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRM de Clientes</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>CRM Simples</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <header>
+    <h1>CRM de Clientes</h1>
 
+    <section id="avaliacoes">
+      <h2>Avaliações</h2>
+      <div class="estrelas">
+        <div class="linha">
+          <span>⭐ 1</span>
+          <input type="number" min="0" id="star1" />
+        </div>
+        <div class="linha">
+          <span>⭐⭐ 2</span>
+          <input type="number" min="0" id="star2" />
+        </div>
+        <div class="linha">
+          <span>⭐⭐⭐ 3</span>
+          <input type="number" min="0" id="star3" />
+        </div>
+        <div class="linha">
+          <span>⭐⭐⭐⭐ 4</span>
+          <input type="number" min="0" id="star4" />
+        </div>
+        <div class="linha">
+          <span>⭐⭐⭐⭐⭐ 5</span>
+          <input type="number" min="0" id="star5" />
+        </div>
+      </div>
 
-<div class="container">
-<div class="topo">
-<h1>📇 CRM de Clientes</h1>
+      <div class="resultado">
+        <p>Média: <strong id="media">0.00</strong></p>
+        <p>Total de avaliações: <strong id="totalAvaliacoes">0</strong></p>
+        <p id="faltam"></p>
+      </div>
+    </section>
+  </header>
 
+  <main>
+    <section id="cadastro">
+      <h2>Cadastrar Cliente</h2>
+      <form id="formCliente">
+        <input type="text" id="tecnico" placeholder="Nome do técnico" required />
+        <input type="text" id="cliente" placeholder="Nome / Razão Social" required />
+        <input type="email" id="email" placeholder="E-mail do cliente" required />
+        <input type="text" id="telefone" placeholder="Telefone do cliente" required />
+        <button type="submit">Salvar Cliente</button>
+      </form>
+    </section>
 
-<div class="avaliacao-box">
-<h3>Avaliações</h3>
-<div class="linha">
-<label>⭐ 1</label><input type="number" min="0" id="star1">
-<label>⭐ 2</label><input type="number" min="0" id="star2">
-<label>⭐ 3</label><input type="number" min="0" id="star3">
-<label>⭐ 4</label><input type="number" min="0" id="star4">
-<label>⭐ 5</label><input type="number" min="0" id="star5">
-</div>
-<div id="media"></div>
-<div id="faltam"></div>
-</div>
-</div>
+    <section id="lista">
+      <h2>Clientes</h2>
+      <ul id="listaClientes"></ul>
+    </section>
+  </main>
 
-
-<form id="formCliente">
-<input id="tecnico" placeholder="Nome do técnico" required>
-<input id="empresa" placeholder="Nome / Razão Social / CPF / CNPJ" required>
-<input id="email" type="email" placeholder="E-mail" required>
-<input id="telefone" placeholder="Telefone" required>
-<button type="submit">Salvar Cliente</button>
-</form>
-
-
-<div class="acoes-topo">
-<input id="busca" placeholder="Pesquisar cliente">
-<button id="exportar">Exportar CSV</button>
-</div>
-
-
-<ul id="lista"></ul>
-</div>
-
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
