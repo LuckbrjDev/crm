@@ -1,11 +1,11 @@
-// ====== CLIENTES ======
+// CLIENTES
 const form = document.getElementById("formCliente");
-const listaClientes = document.getElementById("listaClientes");
+const lista = document.getElementById("listaClientes");
 
-const tecnicoInput = document.getElementById("tecnico");
-const clienteInput = document.getElementById("cliente");
-const emailInput = document.getElementById("email");
-const telefoneInput = document.getElementById("telefone");
+const tecnico = document.getElementById("tecnico");
+const cliente = document.getElementById("cliente");
+const email = document.getElementById("email");
+const telefone = document.getElementById("telefone");
 
 let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
 
@@ -14,125 +14,109 @@ function salvarClientes() {
 }
 
 function renderClientes() {
-  listaClientes.innerHTML = "";
+  lista.innerHTML = "";
 
-  clientes.forEach((c, index) => {
+  clientes.forEach((c, i) => {
     const li = document.createElement("li");
     li.className = "cliente";
 
-    const nome = document.createElement("span");
-    nome.textContent = c.cliente;
+    li.innerHTML = `
+      <span>${c.cliente}</span>
+      <div class="botoes">
+        <button class="excluir">Excluir</button>
+        <button class="avaliar">Avaliação</button>
+        <button class="telefone">Telefone</button>
+      </div>
+    `;
 
-    const botoes = document.createElement("div");
-    botoes.className = "botoes";
-
-    const btnExcluir = document.createElement("button");
-    btnExcluir.textContent = "Excluir";
-    btnExcluir.className = "excluir";
-    btnExcluir.onclick = () => {
-      clientes.splice(index, 1);
+    li.querySelector(".excluir").onclick = () => {
+      clientes.splice(i, 1);
       salvarClientes();
       renderClientes();
     };
 
-    const btnAvaliar = document.createElement("button");
-    btnAvaliar.textContent = "Pedir Avaliação";
-    btnAvaliar.className = "avaliar";
-    btnAvaliar.onclick = () => {
-      const msg = `Olá, tudo bem? 😊
+    li.querySelector(".avaliar").onclick = () => {
+      navigator.clipboard.writeText(
+`Olá, tudo bem? 😊
 Aqui é o "${c.tecnico}" da Soften.
-Só passando para confirmar se ficou alguma dúvida ou pendência do nosso último atendimento — posso te ajudar em algo mais?
 
-Aproveitando, percebi que a avaliação ainda está pendente.
-O formulário foi enviado para seu e-mail "${c.email}".
-Se puder dar uma olhadinha (inclusive no Spam), isso me ajuda muito!
-
-Obrigado pela colaboração! 💙`;
-      navigator.clipboard.writeText(msg);
-      alert("Mensagem copiada!");
+Aproveitando, a avaliação foi enviada para o e-mail "${c.email}".
+Obrigado pela colaboração! 💙`
+      );
     };
 
-    const btnTelefone = document.createElement("button");
-    btnTelefone.textContent = "Telefone";
-    btnTelefone.className = "telefone";
-    btnTelefone.onclick = () => {
-      const limpo = c.telefone.replace(/[\s-]/g, "");
-      navigator.clipboard.writeText(limpo);
-      alert("Telefone copiado!");
+    li.querySelector(".telefone").onclick = () => {
+      navigator.clipboard.writeText(c.telefone.replace(/[\s-]/g, ""));
     };
 
-    botoes.append(btnExcluir, btnAvaliar, btnTelefone);
-    li.append(nome, botoes);
-    listaClientes.appendChild(li);
+    lista.appendChild(li);
   });
 }
 
-form.addEventListener("submit", function (e) {
+form.addEventListener("submit", e => {
   e.preventDefault();
 
-  const novoCliente = {
-    tecnico: tecnicoInput.value,
-    cliente: clienteInput.value,
-    email: emailInput.value,
-    telefone: telefoneInput.value
-  };
+  clientes.push({
+    tecnico: tecnico.value,
+    cliente: cliente.value,
+    email: email.value,
+    telefone: telefone.value
+  });
 
-  clientes.push(novoCliente);
   salvarClientes();
   renderClientes();
 
-  clienteInput.value = "";
-  emailInput.value = "";
-  telefoneInput.value = "";
+  cliente.value = "";
+  email.value = "";
+  telefone.value = "";
 });
 
 renderClientes();
 
-// ====== AVALIAÇÕES ======
-const stars = [1, 2, 3, 4, 5].map(n => document.getElementById(`star${n}`));
+// AVALIAÇÕES
+const stars = [
+  document.getElementById("star1"),
+  document.getElementById("star2"),
+  document.getElementById("star3"),
+  document.getElementById("star4"),
+  document.getElementById("star5")
+];
+
 const mediaEl = document.getElementById("media");
 const totalEl = document.getElementById("totalAvaliacoes");
 const faltamEl = document.getElementById("faltam");
 
-let avaliacoes = JSON.parse(localStorage.getItem("avaliacoes")) || [0, 0, 0, 0, 0];
+let avaliacoes = JSON.parse(localStorage.getItem("avaliacoes")) || [0,0,0,0,0];
 
 function salvarAvaliacoes() {
   localStorage.setItem("avaliacoes", JSON.stringify(avaliacoes));
 }
 
 function calcularAvaliacoes() {
-  let total = 0;
-  let soma = 0;
+  let total = 0, soma = 0;
 
-  avaliacoes.forEach((qtd, i) => {
-    total += qtd;
-    soma += qtd * (i + 1);
+  avaliacoes.forEach((q, i) => {
+    total += q;
+    soma += q * (i + 1);
   });
 
-  const media = total === 0 ? 0 : soma / total;
-
+  const media = total ? soma / total : 0;
   mediaEl.textContent = media.toFixed(2);
   totalEl.textContent = total;
 
   if (media < 4.97 && total > 0) {
     let faltam = 0;
-    let novaMedia = media;
-
-    while (novaMedia < 4.97) {
-      faltam++;
-      novaMedia = (soma + faltam * 5) / (total + faltam);
-    }
-
-    faltamEl.textContent = `Faltam ${faltam} avaliações 5⭐ para atingir média 4,97`;
+    while ((soma + faltam * 5) / (total + faltam) < 4.97) faltam++;
+    faltamEl.textContent = `Faltam ${faltam}× 5⭐`;
   } else {
     faltamEl.textContent = "";
   }
 }
 
-stars.forEach((input, index) => {
-  input.value = avaliacoes[index];
+stars.forEach((input, i) => {
+  input.value = avaliacoes[i];
   input.addEventListener("input", () => {
-    avaliacoes[index] = Number(input.value) || 0;
+    avaliacoes[i] = Number(input.value) || 0;
     salvarAvaliacoes();
     calcularAvaliacoes();
   });
