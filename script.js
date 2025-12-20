@@ -1,85 +1,84 @@
 const form = document.getElementById('formCliente');
-const lista = document.getElementById('listaClientes');
-
-
-let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
-
-
-renderizar();
-
-
-form.addEventListener('submit', e => {
-e.preventDefault();
-
-
-const cliente = {
-tecnico: tecnico.value,
+tecnico: tecnicoInput.value,
 empresa: empresa.value,
 email: email.value,
-telefone: telefone.value
+telefone: telefone.value,
+avaliado: false,
+data: new Date().toLocaleDateString('pt-BR')
 };
 
 
 clientes.push(cliente);
-salvar();
-form.reset();
+localStorage.setItem('clientes', JSON.stringify(clientes));
+localStorage.setItem('tecnico', tecnicoInput.value);
+
+
+empresa.value = email.value = telefone.value = '';
+render();
 });
 
 
-function salvar() {
-localStorage.setItem('clientes', JSON.stringify(clientes));
-renderizar();
-}
+busca.addEventListener('input', render);
+exportar.addEventListener('click', exportarCSV);
 
 
-function renderizar() {
-lista.innerHTML = '';
+function render(){
+lista.innerHTML='';
+const termo = busca.value.toLowerCase();
 
 
-clientes.forEach((c, i) => {
-const li = document.createElement('li');
-li.className = 'cliente';
-
-
-li.innerHTML = `
+clientes.filter(c=>
+c.empresa.toLowerCase().includes(termo) ||
+c.tecnico.toLowerCase().includes(termo) ||
+c.email.toLowerCase().includes(termo) ||
+c.telefone.includes(termo)
+).forEach((c,i)=>{
+const li=document.createElement('li');
+if(c.avaliado) li.classList.add('avaliado');
+li.innerHTML=`
 <div>
-<strong>${c.empresa}</strong>
+<strong>${c.empresa}</strong><br>
 Técnico: ${c.tecnico}<br>
-Email: ${c.email}<br>
-Tel: ${c.telefone}
+${c.email}<br>
+${c.telefone}
 </div>
 <div class="acoes">
-<button class="btn-avaliacao" onclick="pedirAvaliacao(${i})">Avaliação</button>
-<button class="btn-telefone" onclick="copiarTelefone(${i})">Telefone</button>
-<button class="btn-excluir" onclick="excluir(${i})">Excluir</button>
-</div>
-`;
-
-
+<button onclick="avaliar(${i})">Avaliado</button>
+<button onclick="copiar(${i})">Telefone</button>
+<button onclick="remover(${i})">Excluir</button>
+</div>`;
 lista.appendChild(li);
 });
 }
 
 
-function excluir(index) {
-clientes.splice(index, 1);
-salvar();
+function remover(i){ clientes.splice(i,1); salvar(); }
+function avaliar(i){ clientes[i].avaliado=!clientes[i].avaliado; salvar(); }
+function copiar(i){ navigator.clipboard.writeText(clientes[i].telefone.replace(/\D/g,'')); }
+
+
+function salvar(){ localStorage.setItem('clientes',JSON.stringify(clientes)); render(); }
+
+
+function exportarCSV(){
+let csv='Tecnico,Empresa,Email,Telefone,Avaliado,Data\n';
+clientes.forEach(c=>csv+=`"${c.tecnico}","${c.empresa}","${c.email}","${c.telefone}","${c.avaliado?'Sim':'Não'}","${c.data}"\n`);
+const a=document.createElement('a');
+a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+a.download='clientes.csv';
+a.click();
 }
 
 
-function pedirAvaliacao(index) {
-const c = clientes[index];
-const msg = `Olá, tudo bem? 😊\nAqui é o ${c.tecnico} da Soften. Só passando para confirmar se ficou alguma dúvida ou pendência do nosso último atendimento — posso te ajudar em algo mais?\n\nAproveitando, percebi que a avaliação ainda está pendente. O formulário foi enviado para seu e-mail ${c.email}. Se puder dar uma olhadinha (inclusive no Spam), isso me ajuda muito!\n\nObrigado pela colaboração! 💙`;
-
-
-navigator.clipboard.writeText(msg);
-alert('Mensagem copiada para a área de transferência!');
+function renderEstrelas(){
+let total=0,soma=0,html='';
+for(let i=1;i<=5;i++){ html+=`⭐${i}: ${estrelas[i]} `; total+=estrelas[i]; soma+=estrelas[i]*i; }
+estrelasDiv.innerHTML=html;
+if(!total) return;
+const media=soma/total;
+mediaDiv.innerText=`Média: ${media.toFixed(2)}`;
+if(media<4.97){
+const faltam=Math.ceil((4.97*total-soma)/(5-4.97));
+faltamDiv.innerText=`Faltam ${faltam} avaliações 5⭐ para 4,97`;
 }
-
-
-function copiarTelefone(index) {
-let tel = clientes[index].telefone;
-tel = tel.replace(/[^0-9]/g, '');
-navigator.clipboard.writeText(tel);
-alert('Telefone copiado: ' + tel);
 }

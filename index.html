@@ -1,26 +1,43 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CRM de Clientes</title>
-<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+
 <div class="container">
+<div class="topo">
 <h1>📇 CRM de Clientes</h1>
 
 
+<div class="avaliacao-box">
+<div id="estrelas"></div>
+<div id="media"></div>
+<div id="faltam"></div>
+</div>
+</div>
+
+
 <form id="formCliente">
-<input type="text" id="tecnico" placeholder="Nome do técnico" required />
-<input type="text" id="empresa" placeholder="Nome / Razão Social" required />
-<input type="email" id="email" placeholder="E-mail do cliente" required />
-<input type="text" id="telefone" placeholder="Telefone" required />
+<input id="tecnico" placeholder="Nome do técnico" required>
+<input id="empresa" placeholder="Nome / Razão Social / CPF / CNPJ" required>
+<input id="email" type="email" placeholder="E-mail" required>
+<input id="telefone" placeholder="Telefone" required>
 <button type="submit">Salvar Cliente</button>
 </form>
 
 
-<ul id="listaClientes"></ul>
+<div class="acoes-topo">
+<input id="busca" placeholder="Pesquisar cliente">
+<button id="exportar">Exportar CSV</button>
+</div>
+
+
+<ul id="lista"></ul>
 </div>
 
 
