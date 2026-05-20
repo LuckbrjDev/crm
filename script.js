@@ -39,8 +39,7 @@ function renderClientes() {
       navigator.clipboard.writeText(
 `Olá, tudo bem? 😊
 Aqui é o "${c.tecnico}" da Soften.
-Só passando para confirmar se ficou alguma dúvida ou pendência do nosso último atendimento — posso te ajudar em algo mais?
-Aproveitando, percebi que a avaliação referente ao meu atendimento ainda está pendente. O formulário foi enviado para seu e-mail "${c.email}".
+Percebi que a avaliação referente ao meu atendimento ainda está pendente. O formulário foi enviado para seu e-mail "${c.email}".
 Se puder dar uma olhadinha (inclusive no Spam), essa avaliaçao me ajuda muito!
 Obrigado pela colaboração! 💙`
       );
