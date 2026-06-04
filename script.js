@@ -1,6 +1,8 @@
 // CLIENTES
 const form = document.getElementById("formCliente");
 const lista = document.getElementById("listaClientes");
+const totalClientesEl = document.getElementById("totalClientes");
+const toast = document.getElementById("toast");
 
 const tecnico = document.getElementById("tecnico");
 const cliente = document.getElementById("cliente");
@@ -24,13 +26,41 @@ function salvarClientes() {
 
 function renderClientes() {
   lista.innerHTML = "";
+  totalClientesEl.textContent = clientes.length;
+
+  if (!clientes.length) {
+    const vazio = document.createElement("li");
+    vazio.className = "empty-state";
+    vazio.textContent = "Nenhum cliente cadastrado.";
+    lista.appendChild(vazio);
+    return;
+  }
 
   clientes.forEach((c, i) => {
     const li = document.createElement("li");
     li.className = "cliente";
 
+    const clienteInfo = document.createElement("div");
+    clienteInfo.className = "cliente-info";
+
     const nomeCliente = document.createElement("span");
+    nomeCliente.className = "cliente-nome";
     nomeCliente.textContent = c.cliente;
+
+    const detalhes = document.createElement("div");
+    detalhes.className = "cliente-detalhes";
+
+    const emailCliente = document.createElement("span");
+    emailCliente.textContent = c.email;
+
+    const telefoneCliente = document.createElement("span");
+    telefoneCliente.textContent = c.telefone;
+
+    const tecnicoCliente = document.createElement("span");
+    tecnicoCliente.textContent = `Técnico: ${c.tecnico}`;
+
+    detalhes.append(emailCliente, telefoneCliente, tecnicoCliente);
+    clienteInfo.append(nomeCliente, detalhes);
 
     const botoes = document.createElement("div");
     botoes.className = "botoes";
@@ -51,7 +81,7 @@ function renderClientes() {
     copiarTelefone.textContent = "Telefone";
 
     botoes.append(excluir, avaliar, copiarTelefone);
-    li.append(nomeCliente, botoes);
+    li.append(clienteInfo, botoes);
 
     excluir.onclick = () => {
       clientes.splice(i, 1);
@@ -67,12 +97,18 @@ Percebi que a avaliação referente ao meu atendimento ainda está pendente. O f
 Se puder dar uma olhadinha (inclusive no Spam), essa avaliação me ajuda muito!
 Obrigado pela colaboração! 💙`,
         avaliar,
-        "Avaliação"
+        "Avaliação",
+        "Mensagem de avaliação copiada."
       );
     };
 
     copiarTelefone.onclick = () => {
-      copiarTexto(c.telefone.replace(/[^\d+]/g, ""), copiarTelefone, "Telefone");
+      copiarTexto(
+        c.telefone.replace(/[^\d+]/g, ""),
+        copiarTelefone,
+        "Telefone",
+        "Telefone copiado."
+      );
     };
 
     lista.appendChild(li);
@@ -99,16 +135,25 @@ form.addEventListener("submit", e => {
 
 renderClientes();
 
-async function copiarTexto(texto, botao, textoOriginal) {
+async function copiarTexto(texto, botao, textoOriginal, mensagem) {
   try {
     await navigator.clipboard.writeText(texto);
     botao.textContent = "Copiado";
+    mostrarToast(mensagem);
     setTimeout(() => {
       botao.textContent = textoOriginal;
     }, 1400);
   } catch {
-    alert("Não foi possível copiar o texto automaticamente.");
+    mostrarToast("Não foi possível copiar automaticamente.");
   }
+}
+
+function mostrarToast(mensagem) {
+  toast.textContent = mensagem;
+  toast.classList.add("visivel");
+  setTimeout(() => {
+    toast.classList.remove("visivel");
+  }, 2200);
 }
 
 // AVALIAÇÕES

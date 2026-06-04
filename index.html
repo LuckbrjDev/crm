@@ -9,45 +9,80 @@
 <body>
 
 <header class="topbar">
-  <h1>CRM de Clientes</h1>
+  <div>
+    <span class="brand-kicker">Soften</span>
+    <h1>CRM de Clientes</h1>
+  </div>
+  <div class="topbar-status">
+    <span>Local</span>
+    <strong id="totalClientes">0</strong>
+  </div>
 </header>
 
 <main class="dashboard">
 
   <section class="card cadastro">
-    <h2>Cadastrar Cliente</h2>
+    <div class="section-header">
+      <span>Cadastro</span>
+      <h2>Novo cliente</h2>
+    </div>
     <form id="formCliente">
-      <input id="tecnico" placeholder="Nome do técnico" required>
-      <input id="cliente" placeholder="Nome / Razão Social" required>
-      <input id="email" type="email" placeholder="E-mail do cliente" required>
-      <input id="telefone" placeholder="Telefone do cliente" required>
-      <button type="submit">Salvar Cliente</button>
+      <label>
+        Técnico
+        <input id="tecnico" placeholder="Nome do técnico" required>
+      </label>
+      <label>
+        Cliente
+        <input id="cliente" placeholder="Nome / Razão Social" required>
+      </label>
+      <label>
+        E-mail
+        <input id="email" type="email" placeholder="cliente@empresa.com" required>
+      </label>
+      <label>
+        Telefone
+        <input id="telefone" placeholder="(00) 00000-0000" required>
+      </label>
+      <button class="primary-action" type="submit">Salvar cliente</button>
     </form>
   </section>
 
-  <section class="card clientes">
-    <div class="clientes-topo">
-      <h2>Clientes</h2>
+  <section class="card workspace">
+    <div class="workspace-header">
+      <div class="section-header">
+        <span>Relacionamento</span>
+        <h2>Clientes em acompanhamento</h2>
+      </div>
+
+      <div class="metric-group">
+        <div class="metric">
+          <span>Média</span>
+          <strong id="media">0.00</strong>
+        </div>
+        <div class="metric">
+          <span>Avaliações</span>
+          <strong id="totalAvaliacoes">0</strong>
+        </div>
+      </div>
     </div>
 
-    <div class="avaliacoes-inline">
-      <div class="star"><span>⭐1</span><input type="number" id="star1" min="0"></div>
-      <div class="star"><span>⭐2</span><input type="number" id="star2" min="0"></div>
-      <div class="star"><span>⭐3</span><input type="number" id="star3" min="0"></div>
-      <div class="star"><span>⭐4</span><input type="number" id="star4" min="0"></div>
-      <div class="star"><span>⭐5</span><input type="number" id="star5" min="0"></div>
-
-      <div class="avaliacoes-info">
-        <span>Média: <strong id="media">0.00</strong></span>
-        <span>Total: <strong id="totalAvaliacoes">0</strong></span>
-        <span id="faltam"></span>
+    <div class="avaliacoes-panel">
+      <div class="avaliacoes-grid">
+        <label class="star"><span>1 estrela</span><input type="number" id="star1" min="0"></label>
+        <label class="star"><span>2 estrelas</span><input type="number" id="star2" min="0"></label>
+        <label class="star"><span>3 estrelas</span><input type="number" id="star3" min="0"></label>
+        <label class="star"><span>4 estrelas</span><input type="number" id="star4" min="0"></label>
+        <label class="star destaque"><span>5 estrelas</span><input type="number" id="star5" min="0"></label>
       </div>
+      <span id="faltam"></span>
     </div>
 
     <ul id="listaClientes"></ul>
   </section>
 
 </main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="script.js"></script>
 </body>
