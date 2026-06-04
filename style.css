@@ -91,15 +91,26 @@ button:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   padding: 8px 0;
   border-bottom: 1px solid #e5e7eb;
   font-size: 13px;
 }
 
+.cliente > span {
+  overflow-wrap: anywhere;
+}
+
+.botoes {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
 .botoes button {
   padding: 4px 6px;
   font-size: 12px;
-  margin-left: 4px;
+  margin-left: 0;
   border-radius: 4px;
 }
 
@@ -117,6 +128,7 @@ button:hover {
   background: #f8fafc;
   border-radius: 6px;
   font-size: 12px;
+  flex-wrap: wrap;
 }
 
 .star {
@@ -136,6 +148,7 @@ button:hover {
   margin-left: auto;
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 #faltam {
@@ -147,5 +160,26 @@ button:hover {
 @media (max-width: 900px) {
   .dashboard {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .cliente,
+  .botoes,
+  .avaliacoes-info {
+    width: 100%;
+  }
+
+  .cliente {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .botoes button {
+    flex: 1;
+  }
+
+  .avaliacoes-info {
+    margin-left: 0;
   }
 }

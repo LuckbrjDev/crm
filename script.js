@@ -7,7 +7,16 @@ const cliente = document.getElementById("cliente");
 const email = document.getElementById("email");
 const telefone = document.getElementById("telefone");
 
-let clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+function carregarStorage(chave, valorPadrao) {
+  try {
+    const dados = JSON.parse(localStorage.getItem(chave));
+    return Array.isArray(dados) ? dados : valorPadrao;
+  } catch {
+    return valorPadrao;
+  }
+}
+
+let clientes = carregarStorage("clientes", []);
 
 function salvarClientes() {
   localStorage.setItem("clientes", JSON.stringify(clientes));
@@ -20,33 +29,50 @@ function renderClientes() {
     const li = document.createElement("li");
     li.className = "cliente";
 
-    li.innerHTML = `
-      <span>${c.cliente}</span>
-      <div class="botoes">
-        <button class="excluir">Excluir</button>
-        <button class="avaliar">Avaliação</button>
-        <button class="telefone">Telefone</button>
-      </div>
-    `;
+    const nomeCliente = document.createElement("span");
+    nomeCliente.textContent = c.cliente;
 
-    li.querySelector(".excluir").onclick = () => {
+    const botoes = document.createElement("div");
+    botoes.className = "botoes";
+
+    const excluir = document.createElement("button");
+    excluir.className = "excluir";
+    excluir.type = "button";
+    excluir.textContent = "Excluir";
+
+    const avaliar = document.createElement("button");
+    avaliar.className = "avaliar";
+    avaliar.type = "button";
+    avaliar.textContent = "Avaliação";
+
+    const copiarTelefone = document.createElement("button");
+    copiarTelefone.className = "telefone";
+    copiarTelefone.type = "button";
+    copiarTelefone.textContent = "Telefone";
+
+    botoes.append(excluir, avaliar, copiarTelefone);
+    li.append(nomeCliente, botoes);
+
+    excluir.onclick = () => {
       clientes.splice(i, 1);
       salvarClientes();
       renderClientes();
     };
 
-    li.querySelector(".avaliar").onclick = () => {
-      navigator.clipboard.writeText(
+    avaliar.onclick = () => {
+      copiarTexto(
 `Olá, tudo bem? 😊
 Aqui é o "${c.tecnico}" da Soften.
 Percebi que a avaliação referente ao meu atendimento ainda está pendente. O formulário foi enviado para seu e-mail "${c.email}".
-Se puder dar uma olhadinha (inclusive no Spam), essa avaliaçao me ajuda muito!
-Obrigado pela colaboração! 💙`
+Se puder dar uma olhadinha (inclusive no Spam), essa avaliação me ajuda muito!
+Obrigado pela colaboração! 💙`,
+        avaliar,
+        "Avaliação"
       );
     };
 
-    li.querySelector(".telefone").onclick = () => {
-      navigator.clipboard.writeText(c.telefone.replace(/[\s-]/g, ""));
+    copiarTelefone.onclick = () => {
+      copiarTexto(c.telefone.replace(/[^\d+]/g, ""), copiarTelefone, "Telefone");
     };
 
     lista.appendChild(li);
@@ -57,10 +83,10 @@ form.addEventListener("submit", e => {
   e.preventDefault();
 
   clientes.push({
-    tecnico: tecnico.value,
-    cliente: cliente.value,
-    email: email.value,
-    telefone: telefone.value
+    tecnico: tecnico.value.trim(),
+    cliente: cliente.value.trim(),
+    email: email.value.trim(),
+    telefone: telefone.value.trim()
   });
 
   salvarClientes();
@@ -72,6 +98,18 @@ form.addEventListener("submit", e => {
 });
 
 renderClientes();
+
+async function copiarTexto(texto, botao, textoOriginal) {
+  try {
+    await navigator.clipboard.writeText(texto);
+    botao.textContent = "Copiado";
+    setTimeout(() => {
+      botao.textContent = textoOriginal;
+    }, 1400);
+  } catch {
+    alert("Não foi possível copiar o texto automaticamente.");
+  }
+}
 
 // AVALIAÇÕES
 const stars = [
@@ -86,7 +124,8 @@ const mediaEl = document.getElementById("media");
 const totalEl = document.getElementById("totalAvaliacoes");
 const faltamEl = document.getElementById("faltam");
 
-let avaliacoes = JSON.parse(localStorage.getItem("avaliacoes")) || [0,0,0,0,0];
+let avaliacoes = carregarStorage("avaliacoes", [0,0,0,0,0]).slice(0, 5);
+while (avaliacoes.length < 5) avaliacoes.push(0);
 
 function salvarAvaliacoes() {
   localStorage.setItem("avaliacoes", JSON.stringify(avaliacoes));
@@ -105,8 +144,7 @@ function calcularAvaliacoes() {
   totalEl.textContent = total;
 
   if (media < 4.97 && total > 0) {
-    let faltam = 0;
-    while ((soma + faltam * 5) / (total + faltam) < 4.97) faltam++;
+    const faltam = Math.ceil((4.97 * total - soma) / 0.03);
     faltamEl.textContent = `Faltam ${faltam}× 5⭐`;
   } else {
     faltamEl.textContent = "";
@@ -116,7 +154,8 @@ function calcularAvaliacoes() {
 stars.forEach((input, i) => {
   input.value = avaliacoes[i];
   input.addEventListener("input", () => {
-    avaliacoes[i] = Number(input.value) || 0;
+    avaliacoes[i] = Math.max(0, Number(input.value) || 0);
+    input.value = avaliacoes[i];
     salvarAvaliacoes();
     calcularAvaliacoes();
   });
