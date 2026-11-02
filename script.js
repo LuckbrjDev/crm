@@ -92,10 +92,10 @@ function renderClientes() {
     avaliar.onclick = () => {
       copiarTexto(
 `Olá, tudo bem? 😊
-Aqui é o "${c.tecnico}" da Soften.
+Aqui é o "${c.tecnico}" da Soften Sistemas.
 Percebi que a avaliação referente ao meu atendimento ainda está pendente. O formulário foi enviado para seu e-mail "${c.email}".
-Se puder dar uma olhadinha (inclusive no Spam), essa avaliação me ajuda muito!
-Obrigado pela colaboração! 💙`,
+Se puder conferir (inclusive no Spam), essa avaliação me ajuda muito!
+Obrigado pela atenção, uma excelente semana! 💙`,
         avaliar,
         "Avaliação",
         "Mensagem de avaliação copiada."
