@@ -24,6 +24,32 @@ function salvarClientes() {
   localStorage.setItem("clientes", JSON.stringify(clientes));
 }
 
+function normalizarEmail(valor) {
+  return String(valor || "").trim().toLocaleLowerCase("pt-BR");
+}
+
+function normalizarTelefone(valor) {
+  return String(valor || "").replace(/\D/g, "");
+}
+
+function encontrarDuplicado(novoCliente) {
+  const emailNovo = normalizarEmail(novoCliente.email);
+  const telefoneNovo = normalizarTelefone(novoCliente.telefone);
+  return clientes.find(clienteExistente => {
+    const mesmoEmail = emailNovo && normalizarEmail(clienteExistente.email) === emailNovo;
+    const telefoneExistente = normalizarTelefone(clienteExistente.telefone);
+    const mesmoTelefone = telefoneNovo && telefoneExistente && telefoneExistente === telefoneNovo;
+    return mesmoEmail || mesmoTelefone;
+  });
+}
+
+function mostrarFeedbackFormulario(mensagem, tipo = "sucesso") {
+  const feedback = document.getElementById("formFeedback");
+  feedback.textContent = mensagem;
+  feedback.className = `form-feedback ${tipo}`;
+  feedback.hidden = false;
+}
+
 function renderClientes() {
   lista.innerHTML = "";
   totalClientesEl.textContent = clientes.length;
@@ -118,19 +144,41 @@ Obrigado pela atenção, uma excelente semana! 💙`,
 form.addEventListener("submit", e => {
   e.preventDefault();
 
-  clientes.push({
+  const novoCliente = {
     tecnico: tecnico.value.trim(),
     cliente: cliente.value.trim(),
     email: email.value.trim(),
     telefone: telefone.value.trim()
-  });
+  };
 
-  salvarClientes();
-  renderClientes();
+  const duplicado = encontrarDuplicado(novoCliente);
+  if (duplicado) {
+    const correspondeA = [
+      normalizarEmail(duplicado.email) === normalizarEmail(novoCliente.email) ? "e-mail" : "",
+      normalizarTelefone(duplicado.telefone) === normalizarTelefone(novoCliente.telefone) ? "telefone" : ""
+    ].filter(Boolean).join(" e ");
+    mostrarFeedbackFormulario(
+      `Este cliente já está cadastrado pelo mesmo ${correspondeA || "e-mail ou telefone"}: ${duplicado.cliente}. Nenhum novo registro foi criado.`,
+      "aviso"
+    );
+    return;
+  }
+
+  clientes.push(novoCliente);
+
+  try {
+    salvarClientes();
+    renderClientes();
+  } catch {
+    clientes.pop();
+    mostrarFeedbackFormulario("Não foi possível salvar o cliente neste navegador. Confira o espaço disponível e tente novamente.", "erro");
+    return;
+  }
 
   cliente.value = "";
   email.value = "";
   telefone.value = "";
+  mostrarFeedbackFormulario(`Cliente ${novoCliente.cliente} salvo com sucesso.`, "sucesso");
 });
 
 renderClientes();
